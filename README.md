@@ -38,3 +38,12 @@ View your app in AI Studio: https://ai.studio/apps/drive/10fBy2UR5E0NoFeT4PFGv8X
 3. **Firebase (backend):** Copy [.env.example](.env.example) vars into `.env.local` and add your Firebase project config from [Firebase Console](https://console.firebase.google.com) → Project settings → Your apps.
 4. Run the app:
    `npm run dev`
+
+## Deploy (Firebase / Cloud Run)
+
+The app listens on the `PORT` environment variable (default 8080) so it works on Cloud Run and Firebase App Hosting. Deploy flow:
+
+1. **Build:** `npm run build` (outputs to `dist/`)
+2. **Start:** `npm run start` (serves `dist/` on `PORT`)
+
+Ensure your hosting config uses `npm run build` then `npm run start` (not `npm run dev` or `npm run preview`).
