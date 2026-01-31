@@ -48,27 +48,27 @@ const AdminDashboard: React.FC = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-charcoal text-white flex-shrink-0 flex flex-col">
         <div className="p-8 border-b border-white/5">
-           <Link to="/" className="flex items-center gap-3">
-              <span className="text-xl font-black font-playfair tracking-tight">Admin Portal</span>
-           </Link>
+          <Link to="/" className="flex items-center gap-3">
+            <span className="text-xl font-black font-playfair tracking-tight">Admin Portal</span>
+          </Link>
         </div>
         <nav className="flex-grow py-6 px-4 space-y-2">
           {navItems.map(item => (
-            <Link 
-              key={item.id} 
+            <Link
+              key={item.id}
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${location.pathname === item.path ? 'bg-sauce-orange-500 text-white shadow-lg' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon}/></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} /></svg>
               <span className="font-bold text-sm">{item.label}</span>
             </Link>
           ))}
         </nav>
         <div className="p-4 border-t border-white/5">
-           <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-              <span className="font-bold text-sm">Sign Out</span>
-           </button>
+          <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            <span className="font-bold text-sm">Sign Out</span>
+          </button>
         </div>
       </aside>
 
@@ -91,7 +91,20 @@ const AdminDashboard: React.FC = () => {
 
 const RestaurantSettings = () => {
   const [info, setInfo] = useState<RestaurantInfo>(dataService.getRestaurantInfo());
-  const handleSave = (e: React.FormEvent) => { e.preventDefault(); dataService.updateRestaurantInfo(info); alert('Saved!'); };
+  const [saving, setSaving] = useState(false);
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await dataService.updateRestaurantInfo(info);
+      alert('Saved!');
+    } catch (err) {
+      console.error('Failed to save:', err);
+      alert('Failed to save. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl">
@@ -100,29 +113,29 @@ const RestaurantSettings = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Tagline</label>
-            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.tagline} onChange={e => setInfo({...info, tagline: e.target.value})} />
+            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.tagline} onChange={e => setInfo({ ...info, tagline: e.target.value })} />
           </div>
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Address</label>
-            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.address} onChange={e => setInfo({...info, address: e.target.value})} />
+            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.address} onChange={e => setInfo({ ...info, address: e.target.value })} />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Phone</label>
-            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.phone} onChange={e => setInfo({...info, phone: e.target.value})} />
+            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.phone} onChange={e => setInfo({ ...info, phone: e.target.value })} />
           </div>
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Email</label>
-            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.email} onChange={e => setInfo({...info, email: e.target.value})} />
+            <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.email} onChange={e => setInfo({ ...info, email: e.target.value })} />
           </div>
         </div>
         <div>
           <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Square Order URL</label>
-          <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.squareOrderUrl} onChange={e => setInfo({...info, squareOrderUrl: e.target.value})} />
+          <input className="w-full bg-gray-50 rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500" value={info.squareOrderUrl} onChange={e => setInfo({ ...info, squareOrderUrl: e.target.value })} />
         </div>
         <div className="flex items-center gap-3">
-          <input type="checkbox" checked={info.deliveryEnabled} onChange={e => setInfo({...info, deliveryEnabled: e.target.checked})} className="w-5 h-5 accent-sauce-orange-500" />
+          <input type="checkbox" checked={info.deliveryEnabled} onChange={e => setInfo({ ...info, deliveryEnabled: e.target.checked })} className="w-5 h-5 accent-sauce-orange-500" />
           <span className="font-bold text-gray-700">Delivery Enabled</span>
         </div>
         <button type="submit" disabled={saving} className="bg-sauce-orange-500 text-white font-black px-10 py-4 rounded-xl shadow-lg hover:bg-sauce-orange-600 disabled:opacity-50">Save Changes</button>
@@ -134,7 +147,7 @@ const RestaurantSettings = () => {
 const MenuManager = () => {
   const [items, setItems] = useState<MenuItem[]>(dataService.getMenuItems());
   const categories = dataService.getMenuCategories();
-  
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Partial<MenuItem>>({});
@@ -197,10 +210,10 @@ const MenuManager = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Process tags
     const tags = tagInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
-    
+
     let newItems = [...items];
 
     if (editingItem.id) {
@@ -238,25 +251,25 @@ const MenuManager = () => {
               <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-md">{categories.find(c => c.id === item.categoryId)?.name || 'Unknown Category'}</span>
             </div>
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => toggleAvailability(item.id)}
                 className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-colors ${item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
               >
                 {item.available ? 'Available' : 'Sold Out'}
               </button>
-              <button 
+              <button
                 onClick={() => handleEdit(item)}
                 className="text-gray-400 hover:text-sauce-orange-500 p-2 rounded-full hover:bg-sauce-orange-50 transition-colors"
                 title="Edit"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M15.172 2.172a2 2 0 012.828 0l.939.94a2 2 0 010 2.829l-10.828 10.829a2 2 0 01-1.127.57l-4.135.59 1.586-4.135a2 2 0 01.57-1.126l10.828-10.828z"/></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M15.172 2.172a2 2 0 012.828 0l.939.94a2 2 0 010 2.829l-10.828 10.829a2 2 0 01-1.127.57l-4.135.59 1.586-4.135a2 2 0 01.57-1.126l10.828-10.828z" /></svg>
               </button>
-              <button 
+              <button
                 onClick={() => handleDelete(item.id)}
                 className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors"
                 title="Delete"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               </button>
             </div>
           </div>
@@ -271,32 +284,32 @@ const MenuManager = () => {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Name</label>
-                <input 
-                  type="text" 
-                  required 
+                <input
+                  type="text"
+                  required
                   className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                   value={editingItem.name || ''}
-                  onChange={e => setEditingItem({...editingItem, name: e.target.value})}
+                  onChange={e => setEditingItem({ ...editingItem, name: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-black uppercase text-gray-400 mb-1">Price</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     step="0.01"
-                    required 
+                    required
                     className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                     value={editingItem.price || ''}
-                    onChange={e => setEditingItem({...editingItem, price: parseFloat(e.target.value)})}
+                    onChange={e => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-black uppercase text-gray-400 mb-1">Category</label>
-                  <select 
+                  <select
                     className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                     value={editingItem.categoryId}
-                    onChange={e => setEditingItem({...editingItem, categoryId: e.target.value})}
+                    onChange={e => setEditingItem({ ...editingItem, categoryId: e.target.value })}
                   >
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -306,52 +319,52 @@ const MenuManager = () => {
               </div>
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Description</label>
-                <textarea 
+                <textarea
                   rows={3}
                   className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                   value={editingItem.description || ''}
-                  onChange={e => setEditingItem({...editingItem, description: e.target.value})}
+                  onChange={e => setEditingItem({ ...editingItem, description: e.target.value })}
                 />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Item Image</label>
                 <div className="flex flex-col gap-2">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      disabled={uploadingImage}
-                      className="block w-full text-sm text-gray-500
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    disabled={uploadingImage}
+                    className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
                         file:bg-sauce-orange-50 file:text-sauce-orange-700
                         hover:file:bg-sauce-orange-100 disabled:opacity-50
                       "
-                    />
-                    {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
-                    {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
-                    <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
-                    <input 
-                      type="text" 
-                      placeholder="Paste Image URL"
-                      className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
-                      value={editingItem.imageUrl || ''}
-                      onChange={e => setEditingItem({...editingItem, imageUrl: e.target.value})}
-                    />
+                  />
+                  {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
+                  {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
+                  <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
+                  <input
+                    type="text"
+                    placeholder="Paste Image URL"
+                    className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
+                    value={editingItem.imageUrl || ''}
+                    onChange={e => setEditingItem({ ...editingItem, imageUrl: e.target.value })}
+                  />
                 </div>
               </div>
 
               {editingItem.imageUrl && (
-                  <div className="h-40 w-full rounded-xl bg-gray-100 overflow-hidden border border-gray-200">
-                      <img src={editingItem.imageUrl} className="w-full h-full object-cover" alt="Preview" />
-                  </div>
+                <div className="h-40 w-full rounded-xl bg-gray-100 overflow-hidden border border-gray-200">
+                  <img src={editingItem.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                </div>
               )}
 
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Tags (comma separated)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="Spicy, Vegan, Popular"
                   className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                   value={tagInput}
@@ -359,24 +372,24 @@ const MenuManager = () => {
                 />
               </div>
               <div className="flex items-center gap-3 pt-2">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="w-5 h-5 accent-sauce-orange-500"
                   checked={editingItem.available}
-                  onChange={e => setEditingItem({...editingItem, available: e.target.checked})}
+                  onChange={e => setEditingItem({ ...editingItem, available: e.target.checked })}
                 />
                 <label className="font-bold text-gray-700">Available to Order</label>
               </div>
               <div className="flex gap-4 pt-4">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition-colors"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="flex-1 bg-sauce-orange-500 text-white font-bold py-3 rounded-xl hover:bg-sauce-orange-600 shadow-lg transition-colors"
                 >
                   Save Item
@@ -400,7 +413,7 @@ const GalleryManager = () => {
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  
+
   const handleDelete = async (id: string) => {
     if (window.confirm('Remove this image?')) {
       const newGallery = gallery.filter(g => g.id !== id);
@@ -447,7 +460,7 @@ const GalleryManager = () => {
     <div>
       <div className="flex justify-between items-center mb-10">
         <h2 className="text-3xl font-black">Gallery</h2>
-        <button 
+        <button
           onClick={() => setIsModalOpen(true)}
           className="bg-sauce-orange-500 text-white px-6 py-2 rounded-xl font-bold hover:bg-sauce-orange-600 shadow-lg transition-colors"
         >
@@ -461,11 +474,11 @@ const GalleryManager = () => {
             <img src={img.imageUrl} className="w-full h-full object-cover" alt={img.alt} />
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
               <button onClick={() => handleDelete(img.id)} className="bg-white text-red-500 p-2 rounded-full hover:bg-red-50">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               </button>
             </div>
             <div className="absolute bottom-2 left-2">
-                <span className="bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">{img.category}</span>
+              <span className="bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md backdrop-blur-sm">{img.category}</span>
             </div>
           </div>
         ))}
@@ -480,44 +493,44 @@ const GalleryManager = () => {
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Image Source</label>
                 <div className="flex flex-col gap-2">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      disabled={uploadingImage}
-                      className="block w-full text-sm text-gray-500
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    disabled={uploadingImage}
+                    className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
                         file:bg-sauce-orange-50 file:text-sauce-orange-700
                         hover:file:bg-sauce-orange-100 disabled:opacity-50
                       "
-                    />
-                    {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
-                    {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
-                    <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
-                    <input 
-                      type="text" 
-                      placeholder="Paste Image URL"
-                      className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
-                      value={newImage.imageUrl || ''}
-                      onChange={e => setNewImage({...newImage, imageUrl: e.target.value})}
-                    />
+                  />
+                  {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
+                  {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
+                  <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
+                  <input
+                    type="text"
+                    placeholder="Paste Image URL"
+                    className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
+                    value={newImage.imageUrl || ''}
+                    onChange={e => setNewImage({ ...newImage, imageUrl: e.target.value })}
+                  />
                 </div>
               </div>
-              
+
               {newImage.imageUrl && (
-                  <div className="h-40 w-full rounded-xl bg-gray-100 overflow-hidden border border-gray-200">
-                      <img src={newImage.imageUrl} className="w-full h-full object-cover" alt="Preview" />
-                  </div>
+                <div className="h-40 w-full rounded-xl bg-gray-100 overflow-hidden border border-gray-200">
+                  <img src={newImage.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                </div>
               )}
 
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Category</label>
-                <select 
+                <select
                   className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                   value={newImage.category}
-                  onChange={e => setNewImage({...newImage, category: e.target.value as any})}
+                  onChange={e => setNewImage({ ...newImage, category: e.target.value as any })}
                 >
                   <option value="Food">Food</option>
                   <option value="Venue">Venue</option>
@@ -526,26 +539,26 @@ const GalleryManager = () => {
               </div>
               <div>
                 <label className="block text-xs font-black uppercase text-gray-400 mb-1">Alt Text (Description)</label>
-                <input 
-                  type="text" 
-                  required 
+                <input
+                  type="text"
+                  required
                   placeholder="e.g. Spicy Jerk Chicken Platter"
                   className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-sauce-orange-500"
                   value={newImage.alt || ''}
-                  onChange={e => setNewImage({...newImage, alt: e.target.value})}
+                  onChange={e => setNewImage({ ...newImage, alt: e.target.value })}
                 />
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition-colors"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={!newImage.imageUrl || !newImage.alt}
                   className="flex-1 bg-sauce-orange-500 text-white font-bold py-3 rounded-xl hover:bg-sauce-orange-600 shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -569,11 +582,11 @@ const InboxManager = () => {
         {messages.map(m => (
           <div key={m.id} className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
             <div className="flex justify-between mb-4">
-               <div>
-                  <h3 className="font-black text-xl">{m.name}</h3>
-                  <p className="text-sm text-gray-400 font-bold">{m.email} • {new Date(m.createdAt).toLocaleDateString()}</p>
-               </div>
-               <span className="px-3 py-1 bg-sauce-orange-100 text-sauce-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest h-fit">{m.status}</span>
+              <div>
+                <h3 className="font-black text-xl">{m.name}</h3>
+                <p className="text-sm text-gray-400 font-bold">{m.email} • {new Date(m.createdAt).toLocaleDateString()}</p>
+              </div>
+              <span className="px-3 py-1 bg-sauce-orange-100 text-sauce-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest h-fit">{m.status}</span>
             </div>
             <p className="text-gray-600 leading-relaxed">{m.message}</p>
           </div>
@@ -592,22 +605,22 @@ const CateringManager = () => {
       <div className="grid grid-cols-1 gap-6">
         {catering.map(r => (
           <div key={r.id} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
-             <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-2xl font-black">{r.name}</h3>
-                  <p className="text-sm text-gray-400 font-bold">{r.email} • {r.phone}</p>
-                </div>
-                <div className="text-right">
-                  <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block">{r.status}</span>
-                  <p className="text-xs font-black text-charcoal uppercase">Date: {new Date(r.eventDateTime).toLocaleString()}</p>
-                </div>
-             </div>
-             <div className="grid grid-cols-3 gap-6 mb-8 py-6 border-y border-gray-50">
-                <div><p className="text-[10px] font-black text-gray-400 uppercase">Guests</p><p className="font-bold">{r.guestCount}</p></div>
-                <div><p className="text-[10px] font-black text-gray-400 uppercase">Venue</p><p className="font-bold">{r.venueType}</p></div>
-                <div><p className="text-[10px] font-black text-gray-400 uppercase">Fulfillment</p><p className="font-bold">{r.fulfillment}</p></div>
-             </div>
-             <p className="text-gray-600 italic">"{r.notes}"</p>
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-2xl font-black">{r.name}</h3>
+                <p className="text-sm text-gray-400 font-bold">{r.email} • {r.phone}</p>
+              </div>
+              <div className="text-right">
+                <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-block">{r.status}</span>
+                <p className="text-xs font-black text-charcoal uppercase">Date: {new Date(r.eventDateTime).toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-6 mb-8 py-6 border-y border-gray-50">
+              <div><p className="text-[10px] font-black text-gray-400 uppercase">Guests</p><p className="font-bold">{r.guestCount}</p></div>
+              <div><p className="text-[10px] font-black text-gray-400 uppercase">Venue</p><p className="font-bold">{r.venueType}</p></div>
+              <div><p className="text-[10px] font-black text-gray-400 uppercase">Fulfillment</p><p className="font-bold">{r.fulfillment}</p></div>
+            </div>
+            <p className="text-gray-600 italic">"{r.notes}"</p>
           </div>
         ))}
         {catering.length === 0 && <p className="text-gray-400 font-bold text-center py-20 bg-white rounded-3xl border-2 border-dashed">No catering requests yet.</p>}

@@ -12,10 +12,13 @@ const app = express();
 const PORT = Number(process.env.PORT) || 8080;
 const DIST = path.join(__dirname, 'dist');
 
-app.use(express.static(DIST));
+app.use(express.static(DIST, { index: false }));
 
-// SPA fallback: serve index.html for routes that don't match static files
-app.get('*', (_, res) => {
+// SPA fallback: serve index.html only for non-file requests (so /assets/*.js never returns HTML)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/assets/') || /\.[a-z0-9]+$/i.test(req.path)) {
+    return next();
+  }
   res.sendFile(path.join(DIST, 'index.html'));
 });
 

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FFFDF5;
+  color: #1a1a1a;
+}
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+}
+.font-script {
+  font-family: 'Kaushan Script', cursive;
+}
+.logo-glow {
+  text-shadow: 0 0 10px rgba(255, 102, 0, 0.6), 0 0 20px rgba(255, 165, 0, 0.4);
+}
+.text-outline {
+  -webkit-text-stroke: 1px rgba(0,0,0,0.1);
+}

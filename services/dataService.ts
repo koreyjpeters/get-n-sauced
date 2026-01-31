@@ -111,7 +111,7 @@ function getCache(): Cache {
 
 async function seedFirestore(db: ReturnType<typeof getDb>) {
   const c = getCache();
-  await setDoc(doc(db, CONFIG_RESTAURANT), c.info);
+  await setDoc(doc(db, CONFIG_COLLECTION, RESTAURANT_DOC), c.info);
   for (const cat of c.categories) {
     await setDoc(doc(db, COL_CATEGORIES, cat.id), cat);
   }
