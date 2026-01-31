@@ -4,6 +4,7 @@ import { useNavigate, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { getFirebaseAuth } from '../../services/firebase';
 import { dataService } from '../../services/dataService';
+import { uploadImage } from '../../services/uploadService';
 import { RestaurantInfo, MenuItem, MenuCategory, GalleryImage } from '../../types';
 
 const AdminDashboard: React.FC = () => {
@@ -138,6 +139,8 @@ const MenuManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Partial<MenuItem>>({});
   const [tagInput, setTagInput] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const toggleAvailability = async (id: string) => {
     const newItems = items.map(i => i.id === id ? { ...i, available: !i.available } : i);
@@ -175,14 +178,20 @@ const MenuManager = () => {
     setIsModalOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditingItem({ ...editingItem, imageUrl: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploadError(null);
+    setUploadingImage(true);
+    try {
+      const url = await uploadImage(file, 'menu');
+      setEditingItem({ ...editingItem, imageUrl: url });
+    } catch (err) {
+      console.error(err);
+      setUploadError('Upload failed. Try again or use a URL.');
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
     }
   };
 
@@ -311,14 +320,17 @@ const MenuManager = () => {
                       type="file" 
                       accept="image/*"
                       onChange={handleFileChange}
+                      disabled={uploadingImage}
                       className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
                         file:bg-sauce-orange-50 file:text-sauce-orange-700
-                        hover:file:bg-sauce-orange-100
+                        hover:file:bg-sauce-orange-100 disabled:opacity-50
                       "
                     />
+                    {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
+                    {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
                     <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
                     <input 
                       type="text" 
@@ -386,6 +398,8 @@ const GalleryManager = () => {
     alt: '',
     imageUrl: ''
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   
   const handleDelete = async (id: string) => {
     if (window.confirm('Remove this image?')) {
@@ -395,14 +409,20 @@ const GalleryManager = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewImage({ ...newImage, imageUrl: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploadError(null);
+    setUploadingImage(true);
+    try {
+      const url = await uploadImage(file, 'gallery');
+      setNewImage({ ...newImage, imageUrl: url });
+    } catch (err) {
+      console.error(err);
+      setUploadError('Upload failed. Try again or use a URL.');
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
     }
   };
 
@@ -464,14 +484,17 @@ const GalleryManager = () => {
                       type="file" 
                       accept="image/*"
                       onChange={handleFileChange}
+                      disabled={uploadingImage}
                       className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
                         file:bg-sauce-orange-50 file:text-sauce-orange-700
-                        hover:file:bg-sauce-orange-100
+                        hover:file:bg-sauce-orange-100 disabled:opacity-50
                       "
                     />
+                    {uploadingImage && <p className="text-xs font-bold text-sauce-orange-600">Uploading…</p>}
+                    {uploadError && <p className="text-xs font-bold text-red-500">{uploadError}</p>}
                     <div className="text-center text-xs text-gray-300 font-bold uppercase">- OR -</div>
                     <input 
                       type="text" 
