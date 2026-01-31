@@ -1,0 +1,57 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const AdminLogin: React.FC = () => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate auth - real app would use Firebase Auth
+    if (password === 'admin123') {
+      localStorage.setItem('getnsauced_auth', 'true');
+      navigate('/admin/dashboard');
+    } else {
+      setError('Invalid admin credentials.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-charcoal flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-10">
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 bg-burnt-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h1 className="text-3xl font-black font-playfair mb-2">Admin Access</h1>
+          <p className="text-gray-500 text-sm">Sign in to manage Get’n Sauced</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Admin Secret</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              className="w-full bg-cream rounded-xl px-5 py-3 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-burnt-orange-500 transition-all"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
+          <button type="submit" className="w-full bg-burnt-orange-500 text-white font-black py-4 rounded-xl shadow-lg hover:bg-burnt-orange-600 transition-all active:scale-95">
+            Log In
+          </button>
+        </form>
+        
+        <p className="text-center mt-8 text-xs text-gray-400 font-bold uppercase tracking-widest">
+          Secure Portal • Authorized Personnel Only
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default AdminLogin;

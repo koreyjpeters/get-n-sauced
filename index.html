@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get’n Sauced - Caribbean, Soul Food & Vegan in Mount Vernon, NY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'sauce-orange': {
+                50: '#fff7ed',
+                100: '#ffeed7',
+                200: '#ffd9af',
+                300: '#ffb070',
+                400: '#ff8c30',
+                500: '#ff6600', // Vibrant Orange
+                600: '#e64900',
+                700: '#cc3700',
+                800: '#9a2a00',
+                900: '#7c2200',
+              },
+              'island-teal': {
+                50: '#f0fdfa',
+                100: '#ccfbf1',
+                500: '#14b8a6', // Teal
+                600: '#0d9488',
+                900: '#134e4a',
+              },
+              'vegan-green': {
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                500: '#22c55e', // Fresh Green
+                600: '#16a34a',
+                900: '#14532d',
+              },
+              'cream': '#FFFDF5',
+              'sand': '#f5f5f4',
+              'charcoal': '#1a1a1a',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+              script: ['Kaushan Script', 'cursive'],
+            },
+            backgroundImage: {
+              'festive-pattern': "url('https://www.transparenttextures.com/patterns/cubes.png')",
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Kaushan+Script&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #FFFDF5;
+        color: #1a1a1a;
+      }
+      h1, h2, h3, h4 {
+        font-family: 'Playfair Display', serif;
+      }
+      .font-script {
+        font-family: 'Kaushan Script', cursive;
+      }
+      /* Logo Glow Effect mimics the user provided logo */
+      .logo-glow {
+        text-shadow: 0 0 10px rgba(255, 102, 0, 0.6), 0 0 20px rgba(255, 165, 0, 0.4);
+      }
+      .text-outline {
+        -webkit-text-stroke: 1px rgba(0,0,0,0.1);
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

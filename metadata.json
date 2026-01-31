@@ -1,0 +1,8 @@
+{
+  "name": "Get’n Sauced",
+  "description": "Modern, mobile-first website for Get’n Sauced restaurant (Caribbean, Soul Food, Vegan) in Mount Vernon, NY, featuring online ordering, catering requests, and a comprehensive admin dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
