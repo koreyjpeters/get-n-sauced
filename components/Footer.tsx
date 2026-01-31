@@ -8,17 +8,24 @@ import { Icons } from '../constants';
 const Footer: React.FC<{ info: RestaurantInfo }> = ({ info }) => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const location = useLocation();
 
   if (location.pathname.startsWith('/admin')) return null;
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      dataService.subscribeEmail(email);
+    if (!email) return;
+    setSubmitting(true);
+    try {
+      await dataService.subscribeEmail(email);
       setSubscribed(true);
       setEmail('');
       setTimeout(() => setSubscribed(false), 3000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -87,9 +94,10 @@ const Footer: React.FC<{ info: RestaurantInfo }> = ({ info }) => {
               />
               <button
                 type="submit"
-                className="w-full bg-sauce-orange-600 text-white font-bold py-3 rounded-lg hover:bg-sauce-orange-500 transition-colors"
+                disabled={submitting}
+                className="w-full bg-sauce-orange-600 text-white font-bold py-3 rounded-lg hover:bg-sauce-orange-500 transition-colors disabled:opacity-50"
               >
-                {subscribed ? 'You\'re In!' : 'Sign Me Up'}
+                {subscribed ? "You're In!" : submitting ? '…' : 'Sign Me Up'}
               </button>
             </form>
           </div>

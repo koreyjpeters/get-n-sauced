@@ -14,12 +14,21 @@ const Catering: React.FC = () => {
     notes: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dataService.submitCatering(formData);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSubmitting(true);
+    try {
+      await dataService.submitCatering(formData);
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to submit request. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -129,7 +138,7 @@ const Catering: React.FC = () => {
                   <textarea rows={4} className="w-full bg-sand rounded-xl px-5 py-3 border-none focus:ring-2 focus:ring-sauce-orange-400" value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} placeholder="Tell us about the vibe..."></textarea>
                 </div>
 
-                <button type="submit" className="w-full bg-gradient-to-r from-sauce-orange-500 to-red-500 text-white font-black py-5 rounded-2xl text-xl shadow-lg hover:shadow-orange-500/30 transform hover:-translate-y-1 transition-all">
+                <button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-sauce-orange-500 to-red-500 text-white font-black py-5 rounded-2xl text-xl shadow-lg hover:shadow-orange-500/30 transform hover:-translate-y-1 transition-all disabled:opacity-50">
                   Send Inquiry
                 </button>
               </form>

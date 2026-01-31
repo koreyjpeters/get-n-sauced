@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { getFirebaseAuth } from '../../services/firebase';
 import { dataService } from '../../services/dataService';
 import { RestaurantInfo, MenuItem, MenuCategory, GalleryImage } from '../../types';
 
@@ -8,16 +10,28 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('settings');
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
-    const auth = localStorage.getItem('getnsauced_auth');
-    if (!auth) navigate('/admin');
+    const auth = getFirebaseAuth();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setAuthReady(true);
+      if (!user) navigate('/admin');
+    });
+    return () => unsub();
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('getnsauced_auth');
-    navigate('/admin');
+    signOut(getFirebaseAuth()).then(() => navigate('/admin'));
   };
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500 font-bold">Loading…</p>
+      </div>
+    );
+  }
 
   const navItems = [
     { id: 'settings', label: 'Restaurant', path: '/admin/dashboard', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
@@ -110,7 +124,7 @@ const RestaurantSettings = () => {
           <input type="checkbox" checked={info.deliveryEnabled} onChange={e => setInfo({...info, deliveryEnabled: e.target.checked})} className="w-5 h-5 accent-sauce-orange-500" />
           <span className="font-bold text-gray-700">Delivery Enabled</span>
         </div>
-        <button type="submit" className="bg-sauce-orange-500 text-white font-black px-10 py-4 rounded-xl shadow-lg hover:bg-sauce-orange-600">Save Changes</button>
+        <button type="submit" disabled={saving} className="bg-sauce-orange-500 text-white font-black px-10 py-4 rounded-xl shadow-lg hover:bg-sauce-orange-600 disabled:opacity-50">Save Changes</button>
       </form>
     </div>
   );
@@ -125,17 +139,17 @@ const MenuManager = () => {
   const [editingItem, setEditingItem] = useState<Partial<MenuItem>>({});
   const [tagInput, setTagInput] = useState('');
 
-  const toggleAvailability = (id: string) => {
+  const toggleAvailability = async (id: string) => {
     const newItems = items.map(i => i.id === id ? { ...i, available: !i.available } : i);
     setItems(newItems);
-    dataService.updateMenuItems(newItems);
+    await dataService.updateMenuItems(newItems);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this menu item?')) {
       const newItems = items.filter(i => i.id !== id);
       setItems(newItems);
-      dataService.updateMenuItems(newItems);
+      await dataService.updateMenuItems(newItems);
     }
   };
 
@@ -373,13 +387,13 @@ const GalleryManager = () => {
     imageUrl: ''
   });
   
-  const handleDelete = (id: string) => {
-    if(window.confirm("Remove this image?")) {
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Remove this image?')) {
       const newGallery = gallery.filter(g => g.id !== id);
       setGallery(newGallery);
-      dataService.updateGallery(newGallery);
+      await dataService.updateGallery(newGallery);
     }
-  }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -392,21 +406,19 @@ const GalleryManager = () => {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newImage.imageUrl || !newImage.alt) return;
-
     const newItem: GalleryImage = {
-        id: Date.now().toString(),
-        category: newImage.category as any,
-        imageUrl: newImage.imageUrl,
-        alt: newImage.alt || '',
-        sortOrder: gallery.length + 1
+      id: Date.now().toString(),
+      category: newImage.category as GalleryImage['category'],
+      imageUrl: newImage.imageUrl,
+      alt: newImage.alt || '',
+      sortOrder: gallery.length + 1,
     };
-    
     const updatedGallery = [...gallery, newItem];
     setGallery(updatedGallery);
-    dataService.updateGallery(updatedGallery);
+    await dataService.updateGallery(updatedGallery);
     setIsModalOpen(false);
     setNewImage({ category: 'Food', alt: '', imageUrl: '' });
   };

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { RestaurantInfo } from './types';
-import { dataService } from './services/dataService';
+import { dataService, defaultRestaurantInfo } from './services/dataService';
 import { Icons } from './constants';
 
 // Pages
@@ -21,15 +21,26 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 const App: React.FC = () => {
-  const [info, setInfo] = useState<RestaurantInfo>(dataService.getRestaurantInfo());
+  const [info, setInfo] = useState<RestaurantInfo>(defaultRestaurantInfo);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Sync info if it changes (e.g., from admin)
+    dataService.init().then(() => {
+      setInfo(dataService.getRestaurantInfo());
+      setReady(true);
+    }).catch((err) => {
+      console.error('Firebase init failed:', err);
+      setReady(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
     const interval = setInterval(() => {
       setInfo(dataService.getRestaurantInfo());
-    }, 2000);
+    }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [ready]);
 
   return (
     <Router>

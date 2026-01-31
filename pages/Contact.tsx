@@ -7,13 +7,22 @@ const Contact: React.FC = () => {
   const info = dataService.getRestaurantInfo();
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dataService.submitMessage(formData);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    setTimeout(() => setSubmitted(false), 5000);
+    setSubmitting(true);
+    try {
+      await dataService.submitMessage(formData);
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -130,7 +139,7 @@ const Contact: React.FC = () => {
                       onChange={e => setFormData({...formData, message: e.target.value})}
                     ></textarea>
                   </div>
-                  <button type="submit" className="w-full bg-burnt-orange-500 text-white font-black py-5 rounded-2xl text-lg hover:bg-burnt-orange-600 shadow-xl transition-all active:scale-95">
+                  <button type="submit" disabled={submitting} className="w-full bg-burnt-orange-500 text-white font-black py-5 rounded-2xl text-lg hover:bg-burnt-orange-600 shadow-xl transition-all active:scale-95 disabled:opacity-50">
                     Send Message
                   </button>
                </form>
